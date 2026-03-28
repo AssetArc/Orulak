@@ -27,12 +27,12 @@
 
 ## Phase 2: 데이터 레이어
 
-### [3] 공통 타입 정의 + 한국투자증권 API 인증 모듈
+### [3] 공통 타입 정의 + 한국투자증권 API 인증 모듈 — AssetArc/Orulak#5
 
 브랜치: `feat/kis-auth`
 
-- [ ] 공통 타입 정의 (Asset, PriceData, Period 등)
-- [ ] 한국투자증권 API 인증 모듈 (토큰 발급/갱신)
+- [x] 공통 타입 정의 (Asset, PriceData, Period 등)
+- [x] 한국투자증권 API 인증 모듈 (토큰 발급/갱신)
 
 ### [4] 국내 주식 API Route + 데이터 정규화 + Supabase 캐싱
 
