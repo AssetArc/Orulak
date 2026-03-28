@@ -29,5 +29,9 @@ export async function kisFetch<T>(
     throw new Error(`KIS API 요청 실패: ${path} — ${response.status} ${response.statusText}`)
   }
 
-  return response.json() as Promise<T>
+  try {
+    return (await response.json()) as T
+  } catch {
+    throw new Error(`KIS API 응답 파싱 실패: ${path}`)
+  }
 }
