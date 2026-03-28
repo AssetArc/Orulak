@@ -18,6 +18,8 @@ const EXPIRY_BUFFER_MS = 5 * 60 * 1000
 
 // 모듈 스코프 캐시 — 프로세스 내 단일 인스턴스 유지
 let tokenCache: TokenCache | null = null
+// 진행 중인 토큰 발급 Promise — 동시 요청 시 중복 발급 방지
+let pendingTokenRequest: Promise<TokenCache> | null = null
 
 function requireEnv(name: string): string {
   const value = process.env[name]
@@ -67,6 +69,13 @@ export async function getAccessToken(): Promise<string> {
     return tokenCache.accessToken
   }
 
-  tokenCache = await fetchNewToken()
+  // 이미 진행 중인 요청이 있으면 재사용하여 중복 발급 방지
+  if (!pendingTokenRequest) {
+    pendingTokenRequest = fetchNewToken().finally(() => {
+      pendingTokenRequest = null
+    })
+  }
+
+  tokenCache = await pendingTokenRequest
   return tokenCache.accessToken
 }
