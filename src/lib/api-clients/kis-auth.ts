@@ -39,6 +39,8 @@ async function fetchNewToken(): Promise<TokenCache> {
 
   const response = await fetch(`${KIS_BASE_URL}/oauth2/tokenP`, {
     method: 'POST',
+    // 업스트림 응답 지연 시 무한 대기 방지
+    signal: AbortSignal.timeout(10_000),
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       grant_type: 'client_credentials',
@@ -58,8 +60,8 @@ async function fetchNewToken(): Promise<TokenCache> {
     throw new Error('KIS 토큰 응답 파싱 실패: 응답이 JSON 형식이 아닙니다')
   }
 
-  if (!data.access_token) {
-    throw new Error('KIS 토큰 응답에 access_token이 없습니다')
+  if (!data.access_token || typeof data.expires_in !== 'number') {
+    throw new Error('KIS 토큰 응답 형식이 올바르지 않습니다')
   }
 
   return {
