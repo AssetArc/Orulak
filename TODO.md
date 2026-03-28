@@ -16,12 +16,12 @@
 - [x] ESLint + Prettier 설정
 - [x] Husky + lint-staged 설정 (pre-commit hook)
 
-### [2] Supabase 연동 + 기본 레이아웃 구현
+### [2] Supabase 연동 + 기본 레이아웃 구현 — AssetArc/Orulak#3
 
-브랜치: `feat/base-layout`
+브랜치: `chore/supabase-base-layout`
 
-- [ ] Supabase 클라이언트 연동 설정
-- [ ] 기본 레이아웃 구현 (헤더, 메인 컨테이너)
+- [x] Supabase 클라이언트 연동 설정 (서버/클라이언트 팩토리 함수, 런타임 환경변수 검증)
+- [x] 기본 레이아웃 구현 (헤더, 메인 컨테이너, 5개 섹션 스켈레톤)
 
 ---
 
