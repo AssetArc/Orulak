@@ -22,6 +22,10 @@ const EXPIRY_BUFFER_MS = 5 * 60 * 1000
 let tokenCache: TokenCache | null = null
 // 진행 중인 토큰 발급 Promise — 동시 요청 시 중복 발급 방지
 let pendingTokenRequest: Promise<TokenCache> | null = null
+// 마지막 발급 실패 시각 — KIS API 분당 1회 발급 제한 준수용
+let lastTokenFailureAt = 0
+// KIS 권장 재시도 간격 (60초)
+const TOKEN_RETRY_BACKOFF_MS = 60_000
 
 function requireEnv(name: string): string {
   const value = process.env[name]
@@ -83,11 +87,25 @@ export async function getAccessToken(): Promise<string> {
     return tokenCache.accessToken
   }
 
+  // 최근 실패 후 backoff 기간 내 재시도 차단 (KIS API rate limit 방지)
+  if (lastTokenFailureAt && Date.now() - lastTokenFailureAt < TOKEN_RETRY_BACKOFF_MS) {
+    throw new Error('KIS 토큰 재시도 대기 중입니다 (60초 간격 제한)')
+  }
+
   // 이미 진행 중인 요청이 있으면 재사용하여 중복 발급 방지
   if (!pendingTokenRequest) {
-    pendingTokenRequest = fetchNewToken().finally(() => {
-      pendingTokenRequest = null
-    })
+    pendingTokenRequest = fetchNewToken()
+      .then((cache) => {
+        lastTokenFailureAt = 0
+        return cache
+      })
+      .catch((error: unknown) => {
+        lastTokenFailureAt = Date.now()
+        throw error
+      })
+      .finally(() => {
+        pendingTokenRequest = null
+      })
   }
 
   tokenCache = await pendingTokenRequest
