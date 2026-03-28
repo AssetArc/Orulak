@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { getAccessToken } from './kis-auth'
 
 const KIS_BASE_URL = 'https://openapi.koreainvestment.com:9443'

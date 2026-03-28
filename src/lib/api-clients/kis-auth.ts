@@ -1,3 +1,5 @@
+import 'server-only'
+
 // KIS API 토큰 응답 타입 (API 응답 원형 그대로 보존)
 interface KisTokenResponse {
   access_token: string
